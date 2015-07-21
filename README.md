@@ -1,2 +1,0 @@
-# shareLisp
-sbcl of share
