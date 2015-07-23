@@ -3,12 +3,13 @@
 
 
 (defun sliver (page)
-  (drakma:http-request page :connection-timeout 500))
+  (handler-case (drakma:http-request page :connection-timeout 5)
+    (condition nil)))
 
 (defun picklinks (content)
   (mapcar #'(lambda (string) 
 	      (subseq string 9 (- (length string) 1)))
-	  (cl-ppcre:all-matches-as-strings "<a href=\"http:[^\"]*\"" content)))
+	  (cl-ppcre:all-matches-as-strings "<a href=\"http[^\"]*\"" content)))
 
 
 (defun create-breed-spider (url)
@@ -22,9 +23,9 @@
 		     (values index graph nest)
 		     (progn (when (not (find curpage nest :test #'string=))
 			      (nconc nest curpage)
-			      (setq remainpage (union (picklinks (sliver curpage)) remainpage))
+			      (setq remainpage
+				    (union (picklinks (sliver curpage)) remainpage))
 			      (print remainpage))
 			    (setq curpage (pop remainpage))
 			    (breed-spider curpage)))))
 	(breed-spider url)))))
-	  
