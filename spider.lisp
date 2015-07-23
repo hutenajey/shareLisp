@@ -3,7 +3,7 @@
 
 
 (defun sliver (page)
-  (drakma:http-request page))
+  (drakma:http-request page :connection-timeout 500))
 
 (defun picklinks (content)
   (mapcar #'(lambda (string) 
@@ -18,12 +18,13 @@
 	(remainpage ()))
     (lambda ()
       (labels ((breed-spider (curpage)
-		     (if (null curpage)
-			 (values index graph nest)
-			 (progn (if (not (find curpage nest :test #'string=))
-				    (progn (nconc nest curpage)
-					   (setq remainpage (union (picklinks (sliver curpage)) remainpage))
-					   (print remainpage)))
-				(setq curpage (car remainpage) remainpage (cdr remainpage))
-				(breed-spider curpage)))))
+		 (if (null curpage)
+		     (values index graph nest)
+		     (progn (when (not (find curpage nest :test #'string=))
+			      (nconc nest curpage)
+			      (setq remainpage (union (picklinks (sliver curpage)) remainpage))
+			      (print remainpage))
+			    (setq curpage (pop remainpage))
+			    (breed-spider curpage)))))
 	(breed-spider url)))))
+	  
