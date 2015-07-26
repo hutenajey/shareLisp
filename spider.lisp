@@ -16,6 +16,22 @@
 	  (nconc result (cons (stp:attribute-value a "href") nil)))))
     (cdr result)))
 
+(defun cleartags(content)
+  (cl-ppcre:regex-replace-all
+   "&.{1,5};|&#.{1,5};"
+   (cl-ppcre:regex-replace-all
+    "<[\\d\\D]*?>"
+    (cl-ppcre:regex-replace-all
+     "<script[\\d\\D]*?>[\\d\\D]*?<\/script>"
+     (cl-ppcre:regex-replace-all
+      "<style[\\d\\D]*?>[\\d\\D]*?<\/style>" content
+      "")
+     "")
+    "")
+   ""))
+
+(defun pickMainContent (content)
+  )
 
 (defun create-breed-spider (url)
   (let ((index ())
