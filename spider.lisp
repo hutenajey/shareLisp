@@ -30,7 +30,23 @@
     "")
    ""))
 
-(defun pickMainContent (content)
+(defun content-split-trim (content ltrim)
+  (mapcar #'(lambda (line)
+	      (string-trim ltrim line))
+	  (cl-ppcre:split "\\n+" content)))
+
+(defun addprevN (num list)
+  (mapcon #'(lambda (cur)
+	      (if (< (length cur) num)
+		  
+		  (loop for x across (subseq cur 0 num) summing x)))
+	  list))
+
+(defun pickMainContent (content block-line-num)
+  (let* ((lines (content-split-trim content '(#\Space #\Tab #\Newline)))
+	 (blocklengths (addprevN block-line-num (mapcar #'length lines))))
+    
+    
   )
 
 (defun create-breed-spider (url)
